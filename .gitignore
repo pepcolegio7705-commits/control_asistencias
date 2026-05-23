@@ -1,0 +1,14 @@
+# Ignorar carpetas generadas automáticamente y temporales
+/.tmp/
+/vendor/
+/node_modules/
+
+# Archivos de configuración locales
+.env
+config/local.php
+
+# Ignorar archivos del IDE o sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
