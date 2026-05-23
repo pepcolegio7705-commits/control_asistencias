@@ -15,6 +15,8 @@ $mes_actual = date('n');
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 text-secondary"><i class="fa-solid fa-calendar-check text-warning me-2"></i> Planilla de Asistencia</h1>
     <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
+        <label for="inputBuscarProfesor" class="me-2 fw-bold text-muted"><i class="fa-solid fa-magnifying-glass"></i> Buscar:</label>
+        <input type="text" id="inputBuscarProfesor" class="form-control form-control-sm shadow-sm me-3" style="width: 200px;" placeholder="Nombre de profesor...">
         <label for="selectAnio" class="me-2 fw-bold text-muted">Año Lectivo:</label>
         <select id="selectAnio" class="form-select form-select-sm shadow-sm" style="width: 100px;">
             <?php for($y = $anio_actual - 2; $y <= $anio_actual + 1; $y++): ?>
@@ -110,6 +112,11 @@ require_once 'views/layout/footer.php';
             cargarPlanilla();
         });
 
+        // Búsqueda en tiempo real
+        $('#inputBuscarProfesor').on('keyup', function() {
+            filtrarTablaProfesores();
+        });
+
         // Submit del formulario
         $('#formAsistencia').submit(function(e) {
             e.preventDefault();
@@ -132,6 +139,18 @@ require_once 'views/layout/footer.php';
         });
     });
 
+    function filtrarTablaProfesores() {
+        const query = $('#inputBuscarProfesor').val().toLowerCase();
+        $('#contenedorPlanilla table tbody tr').each(function() {
+            const profesorName = $(this).find('td:first').text().toLowerCase();
+            if (profesorName.includes(query)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    }
+
     function cargarPlanilla() {
         $('#contenedorPlanilla').html('<div class="text-center py-5 text-muted"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Cargando...</p></div>');
         
@@ -141,11 +160,13 @@ require_once 'views/layout/footer.php';
             $.post('controllers/asistencias_ajax.php', { action: 'obtener_anual', anio: anio }, function(html) {
                 $('#contenedorPlanilla').html(html);
                 inicializarPopovers();
+                filtrarTablaProfesores();
             });
         } else {
             $.post('controllers/asistencias_ajax.php', { action: 'obtener_planilla', mes: mesSeleccionado, anio: anio }, function(html) {
                 $('#contenedorPlanilla').html(html);
                 inicializarPopovers();
+                filtrarTablaProfesores();
             });
         }
     }
