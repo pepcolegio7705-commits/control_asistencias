@@ -10,10 +10,18 @@ require_once 'views/layout/header.php';
         <button type="button" class="btn btn-sm btn-success shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalArticulo" onclick="resetForm()">
             <i class="fa-solid fa-plus me-1"></i> Nuevo Artículo
         </button>
+        <button type="button" class="btn btn-sm btn-info shadow-sm rounded-pill px-3 py-2 ms-2 text-white" onclick="imprimirArticulos()">
+            <i class="fa-solid fa-print me-1"></i> Imprimir / PDF
+        </button>
     </div>
 </div>
 
-<div class="card shadow border-0 rounded-4 mb-4">
+<!-- Contenedor visible solo al imprimir -->
+<div id="print-articulos-container" class="d-none d-print-block w-100">
+    <div id="print-articulos-content"></div>
+</div>
+
+<div class="card shadow border-0 rounded-4 mb-4 d-print-none">
     <div class="card-body p-4">
         <div class="table-responsive">
             <table id="tablaArticulos" class="table table-hover table-striped align-middle w-100">
@@ -22,6 +30,7 @@ require_once 'views/layout/header.php';
                         <th>ID</th>
                         <th>Código</th>
                         <th>Descripción</th>
+                        <th>Sector</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -48,9 +57,17 @@ require_once 'views/layout/header.php';
                 <label for="codigo" class="form-label text-muted fw-bold">Código Interno</label>
                 <input type="text" class="form-control form-control-lg bg-light" id="codigo" required placeholder="Ej: ART-ENF" style="text-transform: uppercase;">
             </div>
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="descripcion" class="form-label text-muted fw-bold">Descripción Completa</label>
                 <input type="text" class="form-control form-control-lg bg-light" id="descripcion" required placeholder="Ej: Enfermedad con goce de sueldo">
+            </div>
+            <div class="mb-4">
+                <label for="sector" class="form-label text-muted fw-bold">Sector Aplicable</label>
+                <select class="form-select form-select-lg bg-light" id="sector" required>
+                    <option value="ambos">Ambos (Docentes y Auxiliares)</option>
+                    <option value="docente">Solo Docentes</option>
+                    <option value="auxiliar">Solo Auxiliares</option>
+                </select>
             </div>
             <div class="d-grid">
                 <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">Guardar Artículo</button>
@@ -86,7 +103,8 @@ require_once 'views/layout/footer.php';
                 action: 'guardar',
                 id: $('#articulo_id').val(),
                 codigo: $('#codigo').val(),
-                descripcion: $('#descripcion').val()
+                descripcion: $('#descripcion').val(),
+                sector: $('#sector').val()
             };
             $.post('controllers/articulos_ajax.php', formData, function(res) {
                 const data = JSON.parse(res);
@@ -104,6 +122,7 @@ require_once 'views/layout/footer.php';
     function resetForm() {
         $('#formArticulo')[0].reset();
         $('#articulo_id').val('');
+        $('#sector').val('ambos');
         $('#modalArticuloLabel').html('<i class="fa-solid fa-tag me-2"></i> Nuevo Artículo');
     }
 
@@ -115,6 +134,7 @@ require_once 'views/layout/footer.php';
                 $('#articulo_id').val(a.enc_id);
                 $('#codigo').val(a.codigo);
                 $('#descripcion').val(a.descripcion);
+                $('#sector').val(a.sector);
                 $('#modalArticuloLabel').html('<i class="fa-solid fa-pen me-2"></i> Editar Artículo');
                 $('#modalArticulo').modal('show');
             } else {
@@ -144,6 +164,73 @@ require_once 'views/layout/footer.php';
                         Swal.fire('Error', data.msg, 'error');
                     }
                 });
+            }
+        });
+    }
+
+    function imprimirArticulos() {
+        // Mostrar loader
+        Swal.fire({
+            title: 'Preparando documento...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        $.post('controllers/articulos_ajax.php', { action: 'obtener_todos' }, function(res) {
+            Swal.close();
+            const result = JSON.parse(res);
+            if (result.status === 'success') {
+                const articulos = result.data;
+                let html = '';
+
+                const grupos = {
+                    'docente': { titulo: 'Sector Docente', items: [] },
+                    'auxiliar': { titulo: 'Sector Auxiliar', items: [] },
+                    'ambos': { titulo: 'Ambos Sectores (Docentes y Auxiliares)', items: [] }
+                };
+
+                articulos.forEach(a => {
+                    if (grupos[a.sector]) {
+                        grupos[a.sector].items.push(a);
+                    }
+                });
+
+                ['docente', 'auxiliar', 'ambos'].forEach(sec => {
+                    const grupo = grupos[sec];
+                    if (grupo.items.length > 0) {
+                        html += `
+                        <div class="mb-4">
+                            <h4 class="border-bottom pb-2 mb-3" style="color: #000 !important;">${grupo.titulo}</h4>
+                            <table class="table table-bordered table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 20%;">Código</th>
+                                        <th style="width: 80%;">Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+                        grupo.items.forEach(item => {
+                            html += `
+                                    <tr>
+                                        <td class="fw-bold">${item.codigo}</td>
+                                        <td>${item.descripcion}</td>
+                                    </tr>`;
+                        });
+                        html += `
+                                </tbody>
+                            </table>
+                        </div>`;
+                    }
+                });
+
+                $('#print-articulos-content').html(html);
+                
+                // Disparar impresión
+                setTimeout(() => {
+                    window.print();
+                }, 200);
+            } else {
+                Swal.fire('Error', 'No se pudieron cargar los artículos.', 'error');
             }
         });
     }

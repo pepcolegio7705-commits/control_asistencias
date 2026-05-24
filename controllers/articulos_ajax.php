@@ -12,7 +12,7 @@ switch ($action) {
         $length = $_POST['length'] ?? 10;
         $searchValue = $_POST['search']['value'] ?? '';
 
-        $query = "SELECT id, codigo, descripcion FROM articulos WHERE estado = 1";
+        $query = "SELECT id, codigo, descripcion, sector FROM articulos WHERE estado = 1";
         $params = [];
 
         if (!empty($searchValue)) {
@@ -41,26 +41,44 @@ switch ($action) {
             $btnEdit = "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarArticulo(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
             $btnDelete = "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarArticulo(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
 
+            $badgeSector = '';
+            if ($row['sector'] === 'docente') {
+                $badgeSector = "<span class='badge bg-info'>Docentes</span>";
+            } elseif ($row['sector'] === 'auxiliar') {
+                $badgeSector = "<span class='badge bg-warning text-dark'>Auxiliares</span>";
+            } else {
+                $badgeSector = "<span class='badge bg-secondary'>Ambos</span>";
+            }
+
             $data[] = [
                 $row['id'],
                 "<span class='badge bg-dark'>" . htmlspecialchars($row['codigo']) . "</span>",
                 htmlspecialchars($row['descripcion']),
+                $badgeSector,
                 "<div class='text-center'>{$btnEdit}{$btnDelete}</div>"
             ];
         }
 
         echo json_encode([
             "draw" => intval($draw),
-            "recordsTotal" => $totalRecords,
-            "recordsFiltered" => $totalRecords,
+            "recordsTotal" => intval($totalRecords),
+            "recordsFiltered" => intval($totalRecords),
             "data" => $data
         ]);
+        break;
+
+    case 'obtener_todos':
+        // Utilizado para impresión del listado completo agrupado
+        $stmt = $pdo->query("SELECT codigo, descripcion, sector FROM articulos WHERE estado = 1 ORDER BY sector, codigo ASC");
+        $articulos = $stmt->fetchAll();
+        echo json_encode(['status' => 'success', 'data' => $articulos]);
         break;
 
     case 'guardar':
         $id = isset($_POST['id']) ? decrypt_id($_POST['id']) : null;
         $codigo = trim($_POST['codigo'] ?? '');
         $descripcion = trim($_POST['descripcion'] ?? '');
+        $sector = trim($_POST['sector'] ?? 'ambos');
 
         if (empty($codigo) || empty($descripcion)) {
             echo json_encode(['status' => 'error', 'msg' => 'Todos los campos son obligatorios.']);
@@ -69,12 +87,12 @@ switch ($action) {
 
         try {
             if ($id) {
-                $stmt = $pdo->prepare("UPDATE articulos SET codigo = ?, descripcion = ? WHERE id = ?");
-                $stmt->execute([strtoupper($codigo), $descripcion, $id]);
+                $stmt = $pdo->prepare("UPDATE articulos SET codigo = ?, descripcion = ?, sector = ? WHERE id = ?");
+                $stmt->execute([strtoupper($codigo), $descripcion, $sector, $id]);
                 echo json_encode(['status' => 'success', 'msg' => 'Artículo actualizado.']);
             } else {
-                $stmt = $pdo->prepare("INSERT INTO articulos (codigo, descripcion) VALUES (?, ?)");
-                $stmt->execute([strtoupper($codigo), $descripcion]);
+                $stmt = $pdo->prepare("INSERT INTO articulos (codigo, descripcion, sector) VALUES (?, ?, ?)");
+                $stmt->execute([strtoupper($codigo), $descripcion, $sector]);
                 echo json_encode(['status' => 'success', 'msg' => 'Artículo registrado.']);
             }
         } catch (PDOException $e) {
@@ -89,7 +107,7 @@ switch ($action) {
     case 'obtener':
         $id = decrypt_id($_POST['id'] ?? '');
         if ($id) {
-            $stmt = $pdo->prepare("SELECT id, codigo, descripcion FROM articulos WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT id, codigo, descripcion, sector FROM articulos WHERE id = ?");
             $stmt->execute([$id]);
             $art = $stmt->fetch();
             if ($art) {
