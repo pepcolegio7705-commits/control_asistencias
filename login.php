@@ -11,7 +11,7 @@ if (!file_exists($logo_dest) && file_exists($logo_src)) {
 
 // Si ya está logueado, redirigir al dashboard
 if (isset($_SESSION['user_id'])) {
-    header("Location: index");
+    header("Location: index.php?page=dashboard");
     exit;
 }
 
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['rol'] = $user['rol'];
-                header("Location: index");
+                header("Location: index.php?page=dashboard");
                 exit;
             } else {
                 $error = 'Credenciales incorrectas.';
@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="alert alert-danger" style="background: rgba(220,53,69,0.9); color: white; border: none; border-radius: 10px;"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
             
-            <form method="POST" action="login" class="text-start">
+            <form method="POST" action="?page=login" class="text-start">
                 <div class="mb-3">
                     <label for="username" class="form-label text-light fw-semibold">Usuario</label>
                     <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa tu usuario" required>

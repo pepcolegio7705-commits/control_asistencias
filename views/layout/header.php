@@ -14,6 +14,17 @@ require_login();
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body { 
             padding-top: 56px; 
@@ -148,7 +159,7 @@ require_login();
         </button>
         <div class="navbar-nav w-100 d-flex flex-row justify-content-end px-3">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="logout">Cerrar Sesión</a>
+                <a class="nav-link px-3" href="logout.php">Cerrar Sesión</a>
             </div>
         </div>
     </header>
@@ -165,43 +176,66 @@ require_login();
                 <div class="position-sticky sidebar-sticky">
                     <ul class="nav flex-column px-2">
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="index">
+                            <a class="nav-link" aria-current="page" href="?page=dashboard">
                                 <i class="fa-solid fa-home me-2"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="profesores">
+                            <a class="nav-link" href="?page=profesores">
                                 <i class="fa-solid fa-chalkboard-user me-2"></i> Docentes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="asistencias">
+                            <a class="nav-link" href="?page=asistencias">
                                 <i class="fa-solid fa-calendar-check me-2"></i> Planilla Docentes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="auxiliares">
+                            <a class="nav-link" href="?page=auxiliares">
                                 <i class="fa-solid fa-users-gear me-2"></i> Auxiliares
                             </a>
                         </li>
                         <li class="nav-item ms-3">
-                            <a class="nav-link" href="vacaciones_criterios" style="font-size: 0.9em;">
+                            <a class="nav-link" href="?page=vacaciones_criterios" style="font-size: 0.9em;">
                                 <i class="fa-solid fa-umbrella-beach text-warning me-2"></i> Criterios Vacaciones
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="asistencias_auxiliares">
+                            <a class="nav-link" href="?page=asistencias_auxiliares">
                                 <i class="fa-solid fa-calendar-check text-warning me-2"></i> Planilla Auxiliares
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="articulos">
+                            <a class="nav-link" href="?page=articulos">
                                 <i class="fa-solid fa-file-signature me-2"></i> Artículos
+                            </a>
+                        </li>
+                        <li class="nav-item border-top mt-3 pt-3 border-secondary">
+                            <span class="nav-link fw-bold" style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px;">Gestión de Horarios</span>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="?page=cursos" style="font-size: 0.9em;">
+                                <i class="fa-solid fa-school me-2"></i> Cursos
+                            </a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="?page=materias" style="font-size: 0.9em;">
+                                <i class="fa-solid fa-book-open me-2"></i> Materias
+                            </a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="?page=asignaciones" style="font-size: 0.9em;">
+                                <i class="fa-solid fa-link me-2"></i> Asignaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="?page=horarios">
+                                <i class="fa-solid fa-calendar-days text-info me-2"></i> Cuadrícula Horarios
                             </a>
                         </li>
                         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                         <li class="nav-item border-top mt-3 pt-3 border-secondary">
-                            <a class="nav-link text-info" href="usuarios">
+                            <a class="nav-link text-info" href="?page=usuarios">
                                 <i class="fa-solid fa-user-shield me-2"></i> Gestión de Usuarios
                             </a>
                         </li>

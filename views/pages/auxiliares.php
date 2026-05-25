@@ -1,9 +1,3 @@
-<?php
-require_once 'config/security.php';
-require_login();
-require_once 'views/layout/header.php';
-?>
-
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 text-secondary"><i class="fa-solid fa-users-gear text-info me-2"></i> Gestión de Auxiliares</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
@@ -231,9 +225,7 @@ require_once 'views/layout/header.php';
   </div>
 </div>
 
-<?php
-require_once 'views/layout/footer.php';
-?>
+
 <!-- Lógica UI AJAX -->
 <script>
     let tabla;

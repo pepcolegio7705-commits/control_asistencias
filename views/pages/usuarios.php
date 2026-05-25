@@ -91,9 +91,7 @@ require_once 'views/layout/header.php';
   </div>
 </div>
 
-<?php
-require_once 'views/layout/footer.php';
-?>
+
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

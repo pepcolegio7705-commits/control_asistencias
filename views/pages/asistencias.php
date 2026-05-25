@@ -13,10 +13,10 @@ $mes_actual = date('n');
 ?>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-    <h1 class="h2 text-secondary"><i class="fa-solid fa-calendar-check text-warning me-2"></i> Planilla de Asistencia (Auxiliares)</h1>
+    <h1 class="h2 text-secondary"><i class="fa-solid fa-calendar-check text-warning me-2"></i> Planilla de Asistencia</h1>
     <div class="btn-toolbar mb-2 mb-md-0 align-items-center">
-        <label for="inputBuscarAuxiliar" class="me-2 fw-bold text-muted"><i class="fa-solid fa-magnifying-glass"></i> Buscar:</label>
-        <input type="text" id="inputBuscarAuxiliar" class="form-control form-control-sm shadow-sm me-3" style="width: 200px;" placeholder="Nombre de auxiliar...">
+        <label for="inputBuscarProfesor" class="me-2 fw-bold text-muted"><i class="fa-solid fa-magnifying-glass"></i> Buscar:</label>
+        <input type="text" id="inputBuscarProfesor" class="form-control form-control-sm shadow-sm me-3" style="width: 200px;" placeholder="Nombre de profesor...">
         <label for="selectAnio" class="me-2 fw-bold text-muted">Año Lectivo:</label>
         <select id="selectAnio" class="form-select form-select-sm shadow-sm" style="width: 100px;">
             <?php for($y = $anio_actual - 2; $y <= $anio_actual + 1; $y++): ?>
@@ -69,7 +69,7 @@ $mes_actual = date('n');
       <div class="modal-body p-4">
         <form id="formAsistencia">
             <input type="hidden" id="asis_id">
-            <input type="hidden" id="auxiliar_id">
+            <input type="hidden" id="profesor_id">
             <input type="hidden" id="fecha">
             
             <div class="mb-3 text-center">
@@ -93,9 +93,7 @@ $mes_actual = date('n');
   </div>
 </div>
 
-<?php
-require_once 'views/layout/footer.php';
-?>
+
 
 <script>
     let mesSeleccionado = <?= $mes_actual ?>;
@@ -116,8 +114,8 @@ require_once 'views/layout/footer.php';
         });
 
         // Búsqueda en tiempo real
-        $('#inputBuscarAuxiliar').on('keyup', function() {
-            filtrarTablaAuxiliares();
+        $('#inputBuscarProfesor').on('keyup', function() {
+            filtrarTablaProfesores();
         });
 
         // Submit del formulario
@@ -126,11 +124,11 @@ require_once 'views/layout/footer.php';
             const formData = {
                 action: 'guardar',
                 asis_id: $('#asis_id').val(),
-                auxiliar_id: $('#auxiliar_id').val(),
+                profesor_id: $('#profesor_id').val(),
                 fecha: $('#fecha').val(),
                 articulo_id: $('#articulo_id').val()
             };
-            $.post('controllers/asistencias_auxiliares_ajax.php', formData, function(res) {
+            $.post('controllers/asistencias_ajax.php', formData, function(res) {
                 const data = JSON.parse(res);
                 if(data.status === 'success') {
                     $('#modalAsistencia').modal('hide');
@@ -142,11 +140,11 @@ require_once 'views/layout/footer.php';
         });
     });
 
-    function filtrarTablaAuxiliares() {
-        const query = $('#inputBuscarAuxiliar').val().toLowerCase();
+    function filtrarTablaProfesores() {
+        const query = $('#inputBuscarProfesor').val().toLowerCase();
         $('#contenedorPlanilla table tbody tr').each(function() {
-            const auxiliarName = $(this).find('td:first').text().toLowerCase();
-            if (auxiliarName.includes(query)) {
+            const profesorName = $(this).find('td:first').text().toLowerCase();
+            if (profesorName.includes(query)) {
                 $(this).show();
             } else {
                 $(this).hide();
@@ -160,16 +158,16 @@ require_once 'views/layout/footer.php';
         const anio = $('#selectAnio').val();
         
         if (mesSeleccionado === 'anual') {
-            $.post('controllers/asistencias_auxiliares_ajax.php', { action: 'obtener_anual', anio: anio }, function(html) {
+            $.post('controllers/asistencias_ajax.php', { action: 'obtener_anual', anio: anio }, function(html) {
                 $('#contenedorPlanilla').html(html);
                 inicializarPopovers();
-                filtrarTablaAuxiliares();
+                filtrarTablaProfesores();
             });
         } else {
-            $.post('controllers/asistencias_auxiliares_ajax.php', { action: 'obtener_planilla', mes: mesSeleccionado, anio: anio }, function(html) {
+            $.post('controllers/asistencias_ajax.php', { action: 'obtener_planilla', mes: mesSeleccionado, anio: anio }, function(html) {
                 $('#contenedorPlanilla').html(html);
                 inicializarPopovers();
-                filtrarTablaAuxiliares();
+                filtrarTablaProfesores();
             });
         }
     }
@@ -195,7 +193,7 @@ require_once 'views/layout/footer.php';
     }
 
     function cargarArticulosSelect() {
-        $.post('controllers/asistencias_auxiliares_ajax.php', { action: 'obtener_articulos' }, function(res) {
+        $.post('controllers/asistencias_ajax.php', { action: 'obtener_articulos' }, function(res) {
             const data = JSON.parse(res);
             if(data.status === 'success') {
                 let options = '<option value="">-- Seleccione --</option>';
@@ -207,8 +205,8 @@ require_once 'views/layout/footer.php';
         });
     }
 
-    function abrirModalAsistencia(auxiliar_id, fecha, asis_id, articulo_id) {
-        $('#auxiliar_id').val(auxiliar_id);
+    function abrirModalAsistencia(prof_id, fecha, asis_id, articulo_id) {
+        $('#profesor_id').val(prof_id);
         $('#fecha').val(fecha);
         $('#asis_id').val(asis_id);
         $('#articulo_id').val(articulo_id);
@@ -232,14 +230,14 @@ require_once 'views/layout/footer.php';
 
         Swal.fire({
             title: '¿Quitar falta?',
-            text: "El auxiliar volverá a estar PRESENTE en este día.",
+            text: "El docente volverá a estar PRESENTE en este día.",
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Sí, quitar',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                $.post('controllers/asistencias_auxiliares_ajax.php', { action: 'eliminar', asis_id: asis_id }, function(res) {
+                $.post('controllers/asistencias_ajax.php', { action: 'eliminar', asis_id: asis_id }, function(res) {
                     const data = JSON.parse(res);
                     if(data.status === 'success') {
                         $('#modalAsistencia').modal('hide');
