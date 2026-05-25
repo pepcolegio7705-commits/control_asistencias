@@ -42,11 +42,12 @@ switch ($action) {
         $stmt->execute($params);
         $records = $stmt->fetchAll();
 
+        $isUsuario = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario');
         $data = [];
         foreach ($records as $row) {
             $encId = encrypt_id($row['id']);
-            $btnEdit = "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarCriterio(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
-            $btnDelete = "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarCriterio(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
+            $btnEdit = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarCriterio(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
+            $btnDelete = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarCriterio(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
 
             $data[] = [
                 $row['id'],

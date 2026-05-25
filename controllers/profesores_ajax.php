@@ -48,12 +48,13 @@ switch ($action) {
         $stmt->execute($params);
         $records = $stmt->fetchAll();
 
+        $isUsuario = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario');
         $data = [];
         foreach ($records as $row) {
             $encId = encrypt_id($row['id']);
             $btnInfo = "<button class='btn btn-sm btn-outline-secondary rounded-circle me-1' onclick='verInfoProfesor(\"{$encId}\")' title='Ver Información'><i class='fa-solid fa-eye'></i></button>";
-            $btnEdit = "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarProfesor(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
-            $btnDelete = "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarProfesor(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
+            $btnEdit = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarProfesor(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
+            $btnDelete = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarProfesor(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
 
             $data[] = [
                 $row['id'],

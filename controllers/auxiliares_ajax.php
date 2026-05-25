@@ -56,14 +56,17 @@ switch ($action) {
         $stmtArt->execute();
         $artVacaciones = $stmtArt->fetchColumn();
 
+        $isUsuario = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario');
         $data = [];
         foreach ($records as $row) {
             $encId = encrypt_id($row['id']);
+            
+            // Botones de acción
             $btnInfo = "<button class='btn btn-sm btn-outline-secondary rounded-circle me-1' onclick='verInfoAuxiliar(\"{$encId}\")' title='Ver Información'><i class='fa-solid fa-eye'></i></button>";
             $btnHistorial = "<button class='btn btn-sm btn-outline-dark rounded-circle me-1' onclick='verHistorialVacaciones(\"{$encId}\")' title='Historial de Vacaciones'><i class='fa-solid fa-clock-rotate-left'></i></button>";
-            $btnVac = "<button class='btn btn-sm btn-outline-warning rounded-circle me-1' onclick='cargarVacacionModal(\"{$encId}\")' title='Cargar Vacaciones'><i class='fa-solid fa-plane'></i></button>";
-            $btnEdit = "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarAuxiliar(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
-            $btnDelete = "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarAuxiliar(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
+            $btnVac = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-warning rounded-circle me-1' onclick='cargarVacacionModal(\"{$encId}\")' title='Cargar Vacaciones'><i class='fa-solid fa-plane'></i></button>";
+            $btnEdit = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-info rounded-circle me-1' onclick='editarAuxiliar(\"{$encId}\")' title='Editar'><i class='fa-solid fa-pen'></i></button>";
+            $btnDelete = $isUsuario ? "" : "<button class='btn btn-sm btn-outline-danger rounded-circle' onclick='eliminarAuxiliar(\"{$encId}\")' title='Eliminar'><i class='fa-solid fa-trash'></i></button>";
 
             $fechaIngresoStr = '-';
             $diasVacaciones = '-';
