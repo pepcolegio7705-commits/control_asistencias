@@ -184,6 +184,11 @@ require_login();
                                 <i class="fa-solid fa-users-gear me-2"></i> Auxiliares
                             </a>
                         </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link" href="vacaciones_criterios" style="font-size: 0.9em;">
+                                <i class="fa-solid fa-umbrella-beach text-warning me-2"></i> Criterios Vacaciones
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="asistencias_auxiliares">
                                 <i class="fa-solid fa-calendar-check text-warning me-2"></i> Planilla Auxiliares

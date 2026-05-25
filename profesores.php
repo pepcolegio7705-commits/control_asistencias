@@ -19,7 +19,7 @@ require_once 'views/layout/header.php';
 <div class="card shadow border-0 rounded-4 mb-4">
     <div class="card-body p-4">
         <div class="table-responsive">
-            <table id="tablaProfesores" class="table table-hover table-striped align-middle w-100">
+            <table id="tablaProfesores" class="table table-sm table-hover table-striped align-middle w-100">
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
@@ -109,6 +109,57 @@ require_once 'views/layout/header.php';
                 <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">Guardar Cambios</button>
             </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Info Profesor -->
+<div class="modal fade" id="modalInfoProfesor" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header bg-info text-white rounded-top-4">
+        <h5 class="modal-title"><i class="fa-solid fa-address-card me-2"></i> Información del Docente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="text-center mb-4">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center border shadow-sm" style="width: 80px; height: 80px;">
+                <i class="fa-solid fa-user-tie fa-3x text-secondary"></i>
+            </div>
+            <h4 class="mt-3 mb-0" id="info_nombre_completo">Nombre</h4>
+            <p class="text-muted mb-0" id="info_titulo">Título</p>
+        </div>
+        <hr>
+        <div class="row text-sm">
+            <div class="col-6 mb-3">
+                <span class="text-muted d-block small"><i class="fa-solid fa-id-card me-1"></i> DNI</span>
+                <strong id="info_dni"></strong>
+            </div>
+            <div class="col-6 mb-3">
+                <span class="text-muted d-block small"><i class="fa-solid fa-hashtag me-1"></i> CUIL</span>
+                <strong id="info_cuil"></strong>
+            </div>
+            <div class="col-6 mb-3">
+                <span class="text-muted d-block small"><i class="fa-solid fa-briefcase me-1"></i> Legajo</span>
+                <strong id="info_legajo"></strong>
+            </div>
+            <div class="col-6 mb-3">
+                <span class="text-muted d-block small"><i class="fa-solid fa-phone me-1"></i> Teléfono</span>
+                <strong id="info_telefono"></strong>
+            </div>
+            <div class="col-12 mb-3">
+                <span class="text-muted d-block small"><i class="fa-solid fa-envelope me-1"></i> E-mail</span>
+                <strong id="info_mail"></strong>
+            </div>
+            <div class="col-12 mb-2">
+                <span class="text-muted d-block small"><i class="fa-solid fa-map-location-dot me-1"></i> Dirección</span>
+                <strong id="info_direccion"></strong>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
@@ -211,6 +262,26 @@ require_once 'views/layout/footer.php';
                         Swal.fire('Error', data.msg, 'error');
                     }
                 });
+            }
+        });
+    }
+
+    function verInfoProfesor(id) {
+        $.post('controllers/profesores_ajax.php', { action: 'obtener', id: id }, function(res) {
+            const result = JSON.parse(res);
+            if(result.status === 'success') {
+                const p = result.data;
+                $('#info_nombre_completo').text(p.nombre + ' ' + p.apellido);
+                $('#info_titulo').text(p.titulo || 'Sin título registrado');
+                $('#info_dni').text(p.dni);
+                $('#info_cuil').text(p.cuil || '-');
+                $('#info_legajo').text(p.legajo || '-');
+                $('#info_telefono').text(p.telefono || '-');
+                $('#info_mail').text(p.mail || '-');
+                $('#info_direccion').text(p.direccion || '-');
+                $('#modalInfoProfesor').modal('show');
+            } else {
+                Swal.fire('Error', result.msg, 'error');
             }
         });
     }
