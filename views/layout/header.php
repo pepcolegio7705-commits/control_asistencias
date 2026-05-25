@@ -199,6 +199,13 @@ require_login();
                                 <i class="fa-solid fa-file-signature me-2"></i> Artículos
                             </a>
                         </li>
+                        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                        <li class="nav-item border-top mt-3 pt-3 border-secondary">
+                            <a class="nav-link text-info" href="usuarios">
+                                <i class="fa-solid fa-user-shield me-2"></i> Gestión de Usuarios
+                            </a>
+                        </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </nav>

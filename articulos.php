@@ -7,9 +7,11 @@ require_once 'views/layout/header.php';
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 text-secondary"><i class="fa-solid fa-file-signature text-success me-2"></i> Códigos de Asistencia (Artículos)</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-sm btn-success shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalArticulo" onclick="resetForm()">
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'usuario'): ?>
+        <button type="button" class="btn btn-sm btn-primary shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalArticulo" onclick="resetForm()">
             <i class="fa-solid fa-plus me-1"></i> Nuevo Artículo
         </button>
+        <?php endif; ?>
         <button type="button" class="btn btn-sm btn-info shadow-sm rounded-pill px-3 py-2 ms-2 text-white" onclick="imprimirArticulos()">
             <i class="fa-solid fa-print me-1"></i> Imprimir / PDF
         </button>

@@ -7,9 +7,11 @@ require_once 'views/layout/header.php';
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 text-secondary"><i class="fa-solid fa-umbrella-beach text-warning me-2"></i> Criterios de Vacaciones</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-sm btn-primary shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalCriterio" onclick="resetForm()">
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'usuario'): ?>
+        <button type="button" class="btn btn-sm btn-warning text-dark fw-bold shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalCriterio" onclick="resetForm()">
             <i class="fa-solid fa-plus me-1"></i> Nuevo Criterio
         </button>
+        <?php endif; ?>
     </div>
 </div>
 

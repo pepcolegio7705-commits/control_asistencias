@@ -5,6 +5,13 @@ require_login();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
+// Seguridad RBAC: Si es usuario de solo lectura, bloquear acciones de escritura
+$readonly_actions = ['listar', 'obtener', 'historial_vacaciones', 'obtener_vacacion'];
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario' && !in_array($action, $readonly_actions)) {
+    echo json_encode(['status' => 'error', 'msg' => 'Acceso denegado. Permisos de solo lectura.']);
+    exit;
+}
+
 switch ($action) {
     case 'listar':
         // DataTables Server-Side Processing

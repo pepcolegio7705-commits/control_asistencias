@@ -5,6 +5,13 @@ require_login();
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
+// Seguridad RBAC: Si es usuario de solo lectura, bloquear acciones de escritura
+$readonly_actions = ['obtener_planilla', 'obtener_anual', 'obtener_articulos'];
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario' && !in_array($action, $readonly_actions)) {
+    echo json_encode(['status' => 'error', 'msg' => 'Acceso denegado. Permisos de solo lectura.']);
+    exit;
+}
+
 switch ($action) {
     case 'obtener_planilla':
         $mes = (int)($_POST['mes'] ?? date('n'));
@@ -79,6 +86,8 @@ switch ($action) {
         $html .= '<th class="table-warning text-center border-start border-dark" style="min-width:70px;">Faltas</th>';
         $html .= '</tr></thead><tbody>';
         
+        $isUsuario = (isset($_SESSION['rol']) && $_SESSION['rol'] === 'usuario');
+
         foreach ($profesores as $prof) {
             $prof_enc_id = encrypt_id($prof['id']);
             $html .= "<tr>";
@@ -92,12 +101,14 @@ switch ($action) {
                 
                 if (isset($mapa_asistencias[$prof['id']][$d])) {
                     $asis = $mapa_asistencias[$prof['id']][$d];
-                    $html .= "<td class='text-center {$td_class}' style='cursor:pointer;' onclick='abrirModalAsistencia(\"{$prof_enc_id}\", \"{$fecha_actual}\", \"{$asis['asis_id']}\", \"{$asis['articulo_id']}\")'>";
+                    $onclick = $isUsuario ? "" : "style='cursor:pointer;' onclick='abrirModalAsistencia(\"{$prof_enc_id}\", \"{$fecha_actual}\", \"{$asis['asis_id']}\", \"{$asis['articulo_id']}\")'";
+                    $html .= "<td class='text-center {$td_class}' {$onclick}>";
                     $html .= "<span class='badge bg-danger'>{$asis['codigo']}</span>";
                     $html .= "</td>";
                 } else {
                     // Presente (celda vacía)
-                    $html .= "<td class='text-center {$td_class}' style='cursor:pointer;' onclick='abrirModalAsistencia(\"{$prof_enc_id}\", \"{$fecha_actual}\", \"\", \"\")'></td>";
+                    $onclick = $isUsuario ? "" : "style='cursor:pointer;' onclick='abrirModalAsistencia(\"{$prof_enc_id}\", \"{$fecha_actual}\", \"\", \"\")'";
+                    $html .= "<td class='text-center {$td_class}' {$onclick}></td>";
                 }
             }
             

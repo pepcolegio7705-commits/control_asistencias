@@ -7,9 +7,11 @@ require_once 'views/layout/header.php';
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
     <h1 class="h2 text-secondary"><i class="fa-solid fa-users text-primary me-2"></i> Gestión de Profesores</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'usuario'): ?>
         <button type="button" class="btn btn-sm btn-primary shadow-sm rounded-pill px-3 py-2" data-bs-toggle="modal" data-bs-target="#modalProfesor" onclick="resetForm()">
             <i class="fa-solid fa-plus me-1"></i> Nuevo Docente
         </button>
+        <?php endif; ?>
         <button type="button" class="btn btn-sm btn-info shadow-sm rounded-pill px-3 py-2 ms-2 text-white" onclick="window.print()">
             <i class="fa-solid fa-print me-1"></i> Imprimir / PDF
         </button>
