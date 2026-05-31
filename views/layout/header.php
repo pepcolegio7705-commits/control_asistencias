@@ -44,7 +44,7 @@ require_login();
             box-shadow: inset -1px 0 0 rgba(255, 255, 255, .1); 
             backdrop-filter: blur(10px);
         }
-        .sidebar-sticky { position: relative; top: 0; height: calc(100vh - 48px); padding-top: .5rem; overflow-x: hidden; overflow-y: auto; }
+        .sidebar-sticky { position: relative; top: 0; height: calc(100vh - 56px); padding-top: .5rem; padding-bottom: 80px; overflow-x: hidden; overflow-y: auto; }
         .nav-link { font-weight: 500; color: #cbd5e1; margin-bottom: 5px; }
         .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .nav-link.active { color: #6FB1FC; background: rgba(255,255,255,0.1); border-radius: 5px; }
